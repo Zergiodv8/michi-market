@@ -1,0 +1,14 @@
+[
+  {"id": 1, "title": "Alimento premium 7,5 kg", "price": 38900, "category": "Alimento", "description": "Balanceado con proteína de pollo para gatos adultos.", "image": "assets/img/producto-1.svg", "rating": {"rate": 4.8, "count": 126}},
+  {"id": 2, "title": "Rascador torre 1,2 m", "price": 64500, "category": "Descanso", "description": "Tres niveles, cucha y pelotita colgante.", "image": "assets/img/producto-2.svg", "rating": {"rate": 4.9, "count": 88}},
+  {"id": 3, "title": "Fuente de agua 2 L", "price": 29990, "category": "Accesorios", "description": "Filtro de carbón y bomba silenciosa.", "image": "assets/img/producto-3.svg", "rating": {"rate": 4.6, "count": 74}},
+  {"id": 4, "title": "Varita con plumas", "price": 6800, "category": "Juguetes", "description": "Juguete interactivo para estimular el instinto cazador.", "image": "assets/img/producto-4.svg", "rating": {"rate": 4.7, "count": 203}},
+  {"id": 5, "title": "Cama iglú", "price": 24300, "category": "Descanso", "description": "Suave, lavable y con almohadón extraíble.", "image": "assets/img/producto-5.svg", "rating": {"rate": 4.8, "count": 97}},
+  {"id": 6, "title": "Arena aglomerante 10 kg", "price": 12700, "category": "Higiene", "description": "Control de olor y baja emisión de polvo.", "image": "assets/img/producto-6.svg", "rating": {"rate": 4.5, "count": 310}},
+  {"id": 7, "title": "Snacks de salmón 80 g", "price": 4200, "category": "Alimento", "description": "Premios crocantes con salmón real, sin colorantes.", "image": "assets/img/producto-7.svg", "rating": {"rate": 4.9, "count": 158}},
+  {"id": 8, "title": "Collar con cascabel", "price": 5600, "category": "Accesorios", "description": "Cierre de seguridad antiahorcamiento y cascabel desmontable.", "image": "assets/img/producto-8.svg", "rating": {"rate": 4.4, "count": 61}},
+  {"id": 9, "title": "Transportadora mediana", "price": 41800, "category": "Accesorios", "description": "Plástico resistente, ventilación lateral y puerta metálica.", "image": "assets/img/producto-9.svg", "rating": {"rate": 4.6, "count": 45}},
+  {"id": 10, "title": "Comedero doble elevado", "price": 15900, "category": "Accesorios", "description": "Altura ergonómica que cuida el cuello y la digestión.", "image": "assets/img/producto-10.svg", "rating": {"rate": 4.7, "count": 52}},
+  {"id": 11, "title": "Cepillo deslanador", "price": 9400, "category": "Higiene", "description": "Retira el pelo muerto y reduce las bolas de pelo.", "image": "assets/img/producto-11.svg", "rating": {"rate": 4.5, "count": 80}},
+  {"id": 12, "title": "Túnel plegable", "price": 13200, "category": "Juguetes", "description": "Tres salidas, sonajero interno y se guarda en segundos.", "image": "assets/img/producto-12.svg", "rating": {"rate": 4.8, "count": 67}}
+]

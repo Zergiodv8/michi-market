@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arquitectura de Michi Market · Nivel 3 — avanzado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&family=Overpass+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: technical reference an engineer keeps open while changing the code
+   IDEA a survey map of the codebase: layers are terrain bands, modules are stations, dependencies are routes
+   PICTURE the layered map, full width; click a station to draw its routes and open its legend panel
+   COLOUR land ground, ink, contour brown for structure, route magenta for the selected path (theme from JSON)
+   TYPE Overpass 800 display + Overpass text, Overpass Mono for file and function names
+   LAYOUT title and key figures across the top, map + legend panel side by side, then flow, tables, JSON; one column on phones */
+:root{color-scheme:light dark;--bg:light-dark(var(--t-land),#0d1c24);--panel:light-dark(#ffffff,#13262f);--band:light-dark(var(--t-sea),#12303b);--band2:light-dark(color-mix(in srgb,var(--t-sea) 55%,var(--t-land)),#0f2730);--ink:light-dark(#13242e,#e7eef1);--soft:light-dark(#4b5d66,#a9bcc4);--line:light-dark(color-mix(in srgb,var(--t-brown) 45%,transparent),#3b5560);--brown:light-dark(var(--t-brown),#e0a36f);--route:light-dark(var(--t-route),#ff6fb7)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Overpass,system-ui,sans-serif;overflow-x:clip}
+code,.mono{font-family:"Overpass Mono",ui-monospace,Consolas,monospace;font-size:.92em;overflow-wrap:anywhere}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font-weight:800;font-size:clamp(32px,4.4vw,50px);line-height:1.05;letter-spacing:-.02em;margin:0 0 12px;text-wrap:balance}
+h2{font-weight:800;font-size:clamp(22px,2.6vw,30px);line-height:1.1;letter-spacing:-.01em;margin:0 0 14px}
+h3{font-size:18px;margin:0 0 6px}
+p{margin:0 0 12px;max-width:70ch}
+.top{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px 40px;align-items:end;border-top:6px solid var(--brown);padding-top:20px}
+.lead{color:var(--soft);font-size:17px}
+.cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(7.5em,1fr));gap:8px 20px}
+.cifra b{display:block;font-size:clamp(26px,3vw,36px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.cifra span{color:var(--soft);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px;white-space:nowrap;background:var(--panel)}
+.mapa{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;margin-top:20px}
+.fig{position:relative;min-height:420px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.fig text{font-family:Overpass,system-ui,sans-serif;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+.est{cursor:pointer}
+.est rect{fill:var(--panel);stroke:var(--brown);stroke-width:1.2}
+.est.sel rect{fill:color-mix(in srgb,var(--route) 14%,var(--panel));stroke:var(--route);stroke-width:2.4}
+.est.dep rect{stroke:var(--route);stroke-width:1.8}
+.est.usa rect{stroke:var(--brown);stroke-width:1.8;stroke-dasharray:4 3}
+.est:focus{outline:none}.est:focus-visible rect{stroke-width:3}
+.leyenda{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;align-self:start;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}
+.leyenda .ruta{color:var(--soft);font-size:14px;margin-bottom:8px}
+.leyenda ul{margin:4px 0 12px;padding-left:18px}
+.leyenda li{font-size:14px}
+.k{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--soft);margin-top:10px}
+.k i{display:inline-block;width:22px;height:0;border-top:2.4px solid var(--route);vertical-align:middle;margin-right:6px}
+.k i.b{border-top:2px dashed var(--brown)}
+.flujo{display:grid;gap:0;margin-top:8px}
+.paso{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;position:relative;padding-bottom:18px}
+.paso:before{content:"";position:absolute;left:31px;top:44px;bottom:0;border-left:3px solid var(--route)}
+.paso:last-child:before{display:none}
+.num{width:64px;height:44px;border-radius:999px;background:var(--route);color:#fff;font-weight:800;font-size:20px;display:grid;place-items:center}
+.paso .mods{margin-top:4px}.mods .chip{white-space:normal}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px;background:var(--panel)}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--soft);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.fila{cursor:pointer}tr.fila:hover td{background:color-mix(in srgb,var(--route) 6%,transparent)}
+.opc{color:var(--soft);font-size:13px}
+input[type=search]{font:inherit;font-size:16px;width:min(420px,100%);padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);margin-bottom:12px}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--route);outline-offset:2px}
+button{font:inherit;font-weight:600;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--route);background:var(--route);color:#fff;cursor:pointer}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+summary{cursor:pointer;font-weight:600}
+pre{overflow:auto;max-height:520px;font:13px/1.45 "Overpass Mono",ui-monospace,monospace;background:var(--bg);padding:12px;border-radius:8px}
+.pie{color:var(--soft);font-size:13px}
+@media(max-width:960px){.mapa{grid-template-columns:minmax(0,1fr)}.leyenda{position:static;max-height:none}}
+@media(max-width:720px){.top,.grid2{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){table{font-size:13px}th,td{padding:6px 4px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7em;margin-inline-start:-7.5em;color:var(--soft);font-size:12px}.stack td:empty{display:none}.fig{min-height:560px}}
+@media(prefers-reduced-motion:no-preference){.ruta-l{transition:opacity .25s}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="band"><div class="wrap">
+  <div class="top">
+    <div>
+      <h1 id="titulo"></h1>
+      <p class="lead" id="proposito"></p>
+      <div class="chips" id="tecnologias"></div>
+    </div>
+    <div class="cifras" id="cifras"></div>
+  </div>
+  <div class="mapa">
+    <div>
+      <div class="fig" id="fig"><svg id="svg" role="img" aria-label="Mapa de capas y módulos"></svg></div>
+      <div class="k"><span><i></i>usa (dependencias del módulo elegido)</span><span><i class="b"></i>lo usan</span><span>Hacé clic en un módulo, o usá Tab y Enter.</span></div>
+    </div>
+    <aside class="leyenda" id="leyenda" aria-live="polite"></aside>
+  </div>
+</div></header>
+
+<section class="band" style="background:var(--band)"><div class="wrap">
+  <h2 id="t-flujo"></h2>
+  <div class="flujo" id="flujo"></div>
+</div></section>
+
+<section class="band"><div class="wrap grid2">
+  <div><h2>Servicios y piezas externas</h2><div class="scroll"><table class="stack" id="externos"></table></div></div>
+  <div><h2>Datos que guarda</h2><div class="scroll"><table class="stack" id="almacen"></table></div>
+    <div id="modos"></div></div>
+</div></section>
+
+<section class="band" style="background:var(--band2)"><div class="wrap">
+  <h2 id="t-salida"></h2>
+  <div class="scroll"><table class="stack" id="salida"></table></div>
+  <div id="seguridad" style="margin-top:18px"></div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Todos los módulos</h2>
+  <input type="search" id="buscar" placeholder="Buscar módulo, función o librería…" aria-label="Buscar módulo, función o librería">
+  <div class="scroll"><table class="stack" id="tabla"></table></div>
+</div></section>
+
+<section class="band" style="background:var(--band)"><div class="wrap">
+  <details><summary>Ver el JSON completo (el mismo de arquitectura.json)</summary>
+    <p style="margin-top:12px"><button type="button" id="copiar">Copiar JSON</button> <span class="opc" id="copiado"></span></p>
+    <pre id="json"></pre>
+  </details>
+  <p class="pie" id="pie" style="margin-top:14px"></p>
+</div></section>
+
+<script type="application/json" id="datos">{"app": "Michi Market · Nivel 3 — avanzado", "version": "Nivel 3", "generado": "2026-11-21", "proposito": "Versión avanzada: carrito en panel lateral y confirmación en modal de Bootstrap, delegación de eventos, Intl.NumberFormat, validación al salir de cada campo y avisos.", "tecnologias": ["HTML5", "CSS3 (Flexbox, Grid, Media Queries)", "JavaScript", "fetch + async/await", "localStorage", "Bootstrap 5.3 (CDN, con JS)", "Formspree", "GitHub Pages"], "capas": [{"id": "estructura", "nombre": "Estructura"}, {"id": "presentacion", "nombre": "Presentación"}, {"id": "logica", "nombre": "Lógica (script.js)"}, {"id": "datos", "nombre": "Datos"}, {"id": "publicacion", "nombre": "Publicación"}], "modulos": [{"id": "s0", "corto": "§ Configuración y estado", "archivo": "js/script.js § Configuración y estado", "capa": "logica", "descripcion": "Configuración y estado", "lineas": 22, "funciones": [], "clases": [], "usa": ["s3"], "librerias": ["Intl.NumberFormat"]}, {"id": "s1", "corto": "§ 1. Traer los productos de la A", "archivo": "js/script.js § 1. Traer los productos de la API (fetch con async/await)", "capa": "logica", "descripcion": "1. Traer los productos de la API (fetch con async/await)", "lineas": 17, "funciones": ["cargarProductos"], "clases": [], "usa": ["api", "s0", "s2"], "librerias": ["fetch", "async/await"]}, {"id": "s2", "corto": "§ 2. Cards de productos y filtro", "archivo": "js/script.js § 2. Cards de productos y filtros por categoría", "capa": "logica", "descripcion": "2. Cards de productos y filtros por categoría", "lineas": 45, "funciones": ["mostrarProductos", "crearFiltros"], "clases": [], "usa": ["assets", "s0", "s3"], "librerias": []}, {"id": "s3", "corto": "§ 3. Carrito: agregar productos ", "archivo": "js/script.js § 3. Carrito: agregar productos y guardar en localStorage", "capa": "logica", "descripcion": "3. Carrito: agregar productos y guardar en localStorage", "lineas": 32, "funciones": ["leerCarrito", "guardarCarrito", "agregarAlCarrito", "contarProductos", "calcularTotal"], "clases": [], "usa": ["assets", "s0", "s4", "s7"], "librerias": ["localStorage", "JSON"]}, {"id": "s4", "corto": "§ 4. Ver y editar el carrito", "archivo": "js/script.js § 4. Ver y editar el carrito (panel lateral)", "capa": "logica", "descripcion": "4. Ver y editar el carrito (panel lateral)", "lineas": 48, "funciones": ["mostrarCarrito"], "clases": [], "usa": ["s0", "s3"], "librerias": []}, {"id": "s5", "corto": "§ 5. Simular la compra", "archivo": "js/script.js § 5. Simular la compra (modal de Bootstrap)", "capa": "logica", "descripcion": "5. Simular la compra (modal de Bootstrap)", "lineas": 22, "funciones": [], "clases": [], "usa": ["bootstrapjs", "s0", "s3", "s7"], "librerias": ["Bootstrap JS"]}, {"id": "s6", "corto": "§ 6. Formulario de contacto: val", "archivo": "js/script.js § 6. Formulario de contacto: validación y envío a Formspree", "capa": "logica", "descripcion": "6. Formulario de contacto: validación y envío a Formspree", "lineas": 48, "funciones": ["validarCampo"], "clases": [], "usa": ["s0"], "librerias": ["fetch", "async/await", "FormData", "RegExp"]}, {"id": "s7", "corto": "§ Avisos al usuario", "archivo": "js/script.js § Avisos al usuario", "capa": "logica", "descripcion": "Avisos al usuario", "lineas": 14, "funciones": ["mostrarAviso"], "clases": [], "usa": [], "librerias": []}, {"id": "s8", "corto": "§ Inicio", "archivo": "js/script.js § Inicio", "capa": "logica", "descripcion": "Inicio", "lineas": 6, "funciones": [], "clases": [], "usa": ["s1", "s4"], "librerias": []}, {"id": "index", "archivo": "index.html", "capa": "estructura", "descripcion": "Página única con header, nav, secciones (productos, carrito, reseñas, ubicación, contacto) y footer.", "lineas": 163, "funciones": [], "clases": [], "usa": ["styles", "bootstrapcss", "bootstrapjs", "s0"], "librerias": ["HTML5", "Google Fonts", "Google Maps (iframe)"]}, {"id": "styles", "archivo": "css/styles.css", "capa": "presentacion", "descripcion": "Estilos propios: Flexbox en productos, Grid en reseñas, 3 Media Querys.", "lineas": 336, "funciones": [], "clases": [], "usa": [], "librerias": ["Flexbox", "Grid", "Media Queries", "Variables CSS"]}, {"id": "bootstrapcss", "archivo": "Bootstrap CSS (CDN)", "capa": "presentacion", "descripcion": "Clases de Bootstrap para botones y componentes.", "lineas": null, "funciones": [], "clases": [], "usa": [], "librerias": []}, {"id": "bootstrapjs", "archivo": "Bootstrap JS (CDN)", "capa": "logica", "descripcion": "Comportamiento del panel lateral (offcanvas) y del modal.", "lineas": null, "funciones": [], "clases": [], "usa": [], "librerias": []}, {"id": "assets", "archivo": "assets/img/*.svg", "capa": "presentacion", "descripcion": "Logo e imágenes de productos.", "lineas": null, "funciones": [], "clases": [], "usa": [], "librerias": []}, {"id": "api", "archivo": "api/productos.json", "capa": "datos", "descripcion": "API de productos (GET): 12 productos con id, title, price, category, description e image.", "lineas": 14, "funciones": [], "clases": [], "usa": [], "librerias": []}, {"id": "readme", "archivo": "README.md", "capa": "publicacion", "descripcion": "Propósito, cómo verlo y tabla de requisitos de la consigna.", "lineas": 35, "funciones": [], "clases": [], "usa": [], "librerias": []}], "fases": [{"n": 1, "nombre": "Carga la página", "modulos": ["index", "styles", "s0"], "hace": "Se lee el carrito guardado en localStorage y se muestra el contador."}, {"n": 2, "nombre": "Pide los productos", "modulos": ["s1", "api", "s2", "assets"], "hace": "fetch a api/productos.json y se dibuja una card por producto con filtros por categoría."}, {"n": 3, "nombre": "Agrega al carrito", "modulos": ["s3", "s4"], "hace": "Suma el producto (o una unidad más), guarda en localStorage y actualiza el contador."}, {"n": 4, "nombre": "Edita el carrito", "modulos": ["s3", "s4", "index"], "hace": "Botón del header abre el panel lateral: −, +, Eliminar y Vaciar; total y contador se recalculan."}, {"n": 5, "nombre": "Finaliza la compra", "modulos": ["s5", "bootstrapjs"], "hace": "Compra simulada: modal con el resumen y confirmación; se vacía el carrito."}, {"n": 6, "nombre": "Envía una consulta", "modulos": ["s6"], "hace": "Se valida al salir de cada campo; al enviar, fetch a Formspree y mensaje de resultado."}], "externos": [{"id": "pages", "nombre": "GitHub Pages", "acceso": "hosting estático", "usa": ["index"]}, {"id": "formspree", "nombre": "Formspree", "acceso": "POST con fetch a formspree.io/f/xjygbqda", "usa": ["s6"]}, {"id": "cdn", "nombre": "Bootstrap (jsDelivr CDN)", "acceso": "<link> y <script> en index.html", "usa": ["index"]}, {"id": "fonts", "nombre": "Google Fonts", "acceso": "<link> (Fredoka y Nunito)", "usa": ["index"]}, {"id": "maps", "nombre": "Google Maps", "acceso": "iframe", "usa": ["index"]}], "almacenamiento": [{"ruta": "localStorage › michiMarket.carrito", "contenido": "array [{ id, title, price, cantidad }]; si está dañado se empieza vacío"}], "titulo_salida": "Archivos que se publican", "salida": [{"ruta": "index.html · css/ · js/", "que": "la página"}, {"ruta": "api/productos.json", "que": "datos de productos"}, {"ruta": "assets/img/", "que": "imágenes"}, {"ruta": "README.md", "que": "propósito y requisitos"}, {"ruta": "docs/", "que": "este mapa"}], "seguridad": ["El carrito vive sólo en el navegador del visitante.", "El formulario lo recibe Formspree; el sitio no guarda datos.", "La compra es simulada: no hay medios de pago."], "resumen": {"modulos": 4, "lineas": 767, "funciones": 11, "clases": null}, "tema": {"fondo": "#fff7ef", "banda": "#e6dcf5", "estructura": "#6c3fb5", "ruta": "#e0611a"}, "inicio": "s3", "titulo_flujo": "Qué pasa cuando alguien usa la tienda"}</script>
+<script>
+{
+const D = JSON.parse(document.getElementById('datos').textContent);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const t = D.tema || {};
+const raiz = document.documentElement.style;
+raiz.setProperty('--t-land', t.fondo || '#fbfbf2'); raiz.setProperty('--t-sea', t.banda || '#bfe3ee');
+raiz.setProperty('--t-brown', t.estructura || '#a8551b'); raiz.setProperty('--t-route', t.ruta || '#d6127e');
+
+const mods = D.modulos, porId = Object.fromEntries(mods.map(m => [m.id, m]));
+const usadoPor = id => mods.filter(m => (m.usa || []).includes(id)).map(m => m.id);
+const nFun = m => (m.funciones || []).length + (m.clases || []).reduce((s, c) => s + c.metodos.length, 0);
+
+$('titulo').textContent = 'Arquitectura de ' + D.app;
+$('proposito').textContent = D.proposito;
+$('tecnologias').innerHTML = D.tecnologias.map(x => `<span class="chip">${esc(x)}</span>`).join('');
+const R = D.resumen;
+$('cifras').innerHTML = [[D.version, 'versión'], [R.modulos, 'archivos de código'], [R.lineas.toLocaleString('es-AR'), 'líneas'], [R.funciones, 'funciones y métodos'], [R.clases, 'clases']]
+  .filter(x => x[0] !== undefined && x[0] !== null).map(([v, l]) => `<div class="cifra"><b>${esc(v)}</b><span>${l}</span></div>`).join('');
+
+let sel = D.inicio || mods[0].id;
+const fig = $('fig'), svg = $('svg');
+function dibujar() {
+  const W = fig.clientWidth, cw = W < 520 ? 132 : 158, ch = 46, gx = 12, gy = 12, izq = W < 520 ? 12 : 172, padT = 14;
+  const porFila = Math.max(1, Math.floor((W - izq - 12 + gx) / (cw + gx)));
+  let y = 10, bandas = '', pos = {};
+  D.capas.forEach((c, i) => {
+    const lista = mods.filter(m => m.capa === c.id), filas = Math.max(1, Math.ceil(lista.length / porFila));
+    const alto = padT * 2 + filas * ch + (filas - 1) * gy + (W < 520 ? 22 : 0);
+    bandas += `<rect x="0" y="${y}" width="${W}" height="${alto}" fill="${i % 2 ? 'var(--band2)' : 'var(--band)'}" opacity=".55"/>`;
+    bandas += W < 520 ? `<text x="12" y="${y + 18}" font-size="13" font-weight="800">${esc(c.nombre)}</text>`
+                      : `<text x="14" y="${y + 24}" font-size="14" font-weight="800">${esc(c.nombre)}</text><text x="14" y="${y + 42}" font-size="12" fill="var(--soft)">${lista.length} módulo${lista.length === 1 ? '' : 's'}</text>`;
+    const y0 = y + padT + (W < 520 ? 22 : 0);
+    lista.forEach((m, j) => { pos[m.id] = {x: izq + (j % porFila) * (cw + gx), y: y0 + Math.floor(j / porFila) * (ch + gy)}; });
+    y += alto + 4;
+  });
+  fig.style.height = y + 6 + 'px';
+  const m = porId[sel], deps = (m.usa || []).filter(d => pos[d]), quien = usadoPor(sel).filter(d => pos[d]);
+  const curva = (a, b, clase) => {
+    const p = pos[a], q = pos[b]; if (!p || !q) return '';
+    const x1 = p.x + cw / 2, y1 = p.y + ch / 2, x2 = q.x + cw / 2, y2 = q.y + ch / 2, mx = (x1 + x2) / 2 + (y1 === y2 ? 0 : 30);
+    const my = y1 === y2 ? y1 - 40 : (y1 + y2) / 2;
+    return `<path class="ruta-l" d="M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}" fill="none" ${clase}/>`;
+  };
+  let rutas = deps.map(d => curva(sel, d, 'stroke="var(--route)" stroke-width="2.4" marker-end="url(#fl)"')).join('')
+            + quien.map(d => curva(d, sel, 'stroke="var(--brown)" stroke-width="1.8" stroke-dasharray="5 4"')).join('');
+  const est = mods.filter(x => pos[x.id]).map(x => {
+    const p = pos[x.id], k = x.id === sel ? 'sel' : deps.includes(x.id) ? 'dep' : quien.includes(x.id) ? 'usa' : '';
+    const nombre = x.corto || x.archivo.split('/').pop();
+    return `<g class="est ${k}" data-id="${x.id}" tabindex="0" role="button" aria-label="${esc(nombre)}: ${esc(x.descripcion)}">
+      <rect x="${p.x}" y="${p.y}" width="${cw}" height="${ch}" rx="7"/>
+      <text x="${p.x + 10}" y="${p.y + 20}" font-size="13" font-weight="600">${esc(nombre.length > 20 ? nombre.slice(0, 19) + '…' : nombre)}</text>
+      <text x="${p.x + 10}" y="${p.y + 37}" font-size="12" fill="var(--soft)">${x.lineas ? x.lineas + ' líneas · ' : ''}${nFun(x)} func.</text></g>`;
+  }).join('');
+  svg.innerHTML = `<defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--route)"/></marker></defs>${bandas}<g>${rutas}</g>${est}`;
+}
+function leyenda() {
+  const m = porId[sel], quien = usadoPor(sel);
+  const lista = (arr, f = x => `<code>${esc(x)}</code>`) => arr && arr.length ? `<ul>${arr.map(x => `<li>${f(x)}</li>`).join('')}</ul>` : '<p class="opc">—</p>';
+  const capa = D.capas.find(c => c.id === m.capa);
+  $('leyenda').innerHTML = `<h3>${esc(m.corto || m.archivo.split('/').pop())}</h3><div class="ruta"><code>${esc(m.archivo)}</code> · ${esc(capa?.nombre)}${m.lineas ? ' · ' + m.lineas + ' líneas' : ''}</div>
+    <p>${esc(m.descripcion)}</p>
+    ${m.scripts ? `<h3>Scripts</h3>${lista(m.scripts)}` : ''}
+    <h3>Funciones (${(m.funciones || []).length})</h3>${lista(m.funciones, x => `<code>${esc(x)}()</code>`)}
+    ${(m.clases || []).length ? `<h3>Clases</h3>${m.clases.map(c => `<p style="margin:0 0 4px"><code><b>${esc(c.nombre)}</b></code></p>${lista(c.metodos, x => `<code>${esc(x)}()</code>`)}`).join('')}` : ''}
+    <h3>Usa</h3>${lista(m.usa, x => `<a href="#" data-ir="${esc(x)}"><code>${esc(porId[x]?.archivo || x)}</code></a>`)}
+    <h3>Lo usan</h3>${lista(quien, x => `<a href="#" data-ir="${esc(x)}"><code>${esc(porId[x].archivo)}</code></a>`)}
+    <h3>Librerías</h3>${lista(m.librerias)}`;
+}
+function elegir(id) { if (!porId[id]) return; sel = id; dibujar(); leyenda(); }
+svg.addEventListener('click', e => { const g = e.target.closest('.est'); if (g) elegir(g.dataset.id); });
+svg.addEventListener('keydown', e => { const g = e.target.closest('.est'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); elegir(g.dataset.id); setTimeout(() => svg.querySelector(`.est[data-id="${g.dataset.id}"]`)?.focus(), 0); } });
+document.addEventListener('click', e => { const a = e.target.closest('[data-ir]'); if (a) { e.preventDefault(); elegir(a.dataset.ir); fig.scrollIntoView({block: 'start'}); } });
+const ro = new ResizeObserver(() => dibujar()); ro.observe(fig);
+
+$('t-flujo').textContent = D.titulo_flujo || 'Cómo funciona, paso a paso';
+$('flujo').innerHTML = D.fases.map(f => `<div class="paso"><div class="num">${f.n}</div><div><h3>${esc(f.nombre)}</h3><p>${esc(f.hace)}</p>
+  <div class="chips mods">${f.modulos.map(x => `<a href="#" class="chip" data-ir="${esc(x)}"><code>${esc(porId[x]?.corto || porId[x]?.archivo.split('/').pop() || x)}</code></a>`).join('')}</div></div></div>`).join('');
+
+$('externos').innerHTML = '<thead><tr><th>Servicio</th><th>Cómo se accede</th><th>Desde</th></tr></thead><tbody>' + D.externos.map(x =>
+  `<tr><td><b>${esc(x.nombre)}</b>${x.opcional ? ' <span class="opc">(opcional)</span>' : ''}</td><td>${esc(x.acceso)}</td><td>${x.usa.map(u => `<code>${esc(porId[u]?.archivo.split('/').pop() || u)}</code>`).join(', ')}</td></tr>`).join('') + '</tbody>';
+$('almacen').innerHTML = '<thead><tr><th>Dónde</th><th>Qué guarda</th></tr></thead><tbody>' + D.almacenamiento.map(x => `<tr><td><code>${esc(x.ruta)}</code></td><td>${esc(x.contenido)}</td></tr>`).join('') + '</tbody>';
+if (D.modos) $('modos').innerHTML = `<h3 style="margin-top:20px">${esc(D.titulo_modos || 'Modos')}</h3><ul>` + Object.entries(D.modos).map(([k, v]) => `<li><b>${esc(k)}</b>: ${esc(v)}</li>`).join('') + '</ul>';
+$('t-salida').textContent = D.titulo_salida || 'Qué genera';
+$('salida').innerHTML = '<thead><tr><th>Archivo o carpeta</th><th>Contenido</th></tr></thead><tbody>' + D.salida.map(x => `<tr><td><code>${esc(x.ruta)}</code></td><td>${esc(x.que)}</td></tr>`).join('') + '</tbody>';
+if (D.seguridad) $('seguridad').innerHTML = '<h3>Seguridad</h3><ul>' + D.seguridad.map(x => `<li>${esc(x)}</li>`).join('') + '</ul>';
+
+function tabla(q = '') {
+  q = q.trim().toLowerCase();
+  const filas = mods.filter(m => !q || [m.archivo, m.descripcion, ...(m.funciones || []), ...(m.librerias || []), ...(m.clases || []).flatMap(c => [c.nombre, ...c.metodos])].join(' ').toLowerCase().includes(q));
+  $('tabla').innerHTML = '<thead><tr><th>Archivo</th><th>Capa</th><th>Qué hace</th><th>Líneas</th><th>Funciones</th></tr></thead><tbody>' +
+    (filas.length ? filas.map(m => `<tr class="fila" data-ir="${esc(m.id)}" tabindex="0"><td><code>${esc(m.archivo)}</code></td><td>${esc(D.capas.find(c => c.id === m.capa)?.nombre)}</td><td>${esc(m.descripcion)}</td><td class="n">${m.lineas ?? ''}</td><td class="n">${nFun(m)}</td></tr>`).join('')
+                  : '<tr><td colspan="5">Ningún módulo coincide con la búsqueda.</td></tr>') + '</tbody>';
+}
+$('buscar').addEventListener('input', e => tabla(e.target.value));
+$('tabla').addEventListener('keydown', e => { const r = e.target.closest('tr.fila'); if (r && e.key === 'Enter') { elegir(r.dataset.ir); fig.scrollIntoView({block: 'start'}); } });
+tabla();
+
+const texto = JSON.stringify(D, null, 2);
+$('json').textContent = texto;
+$('copiar').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(texto); $('copiado').textContent = 'Copiado.'; }
+  catch { $('copiado').textContent = 'No se pudo copiar: seleccioná el texto con Ctrl+A dentro del cuadro.'; }
+});
+$('pie').textContent = `Generado el ${D.generado} desde el código fuente (funciones, clases e imports) más la descripción de cada capa. Datos completos en arquitectura.json.`;
+leyenda();
+}
+</script>
+</body>
+</html>
