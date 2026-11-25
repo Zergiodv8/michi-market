@@ -3,157 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Tienda online de productos para gatos: alimento, juguetes, rascadores y accesorios.">
-  <title>Michi Market | Todo para tu gato, en un solo lugar</title>
+  <!-- SEO -->
+  <title>Michi Market | Tienda online para gatos</title>
+  <meta name="description" content="Michi Market: tienda online de productos para gatos. Alimento, juguetes, rascadores, camas y accesorios con envío a todo el país.">
+  <meta name="keywords" content="tienda para gatos, alimento para gatos, juguetes para gatos, rascador, Moreno">
+  <meta name="author" content="Sergio Daniel Espinoza">
+  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+  <!-- Vista previa al compartir el link (Open Graph) -->
+  <meta property="og:title" content="Michi Market | Tienda online para gatos">
+  <meta property="og:description" content="Alimento, juguetes, rascadores y accesorios para tu gato.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/img/producto-2.svg">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+
   <header class="encabezado">
-    <div class="contenedor encabezado-interno">
-      <a class="logo" href="#inicio"><img src="assets/img/logo.svg" alt="" width="40" height="40"> Michi Market</a>
-      <nav aria-label="Navegación principal">
+    <div class="encabezado-interno">
+      <a href="#inicio" class="logo">
+        <img src="assets/img/logo.svg" alt="" width="40" height="40">
+        Michi Market
+      </a>
+      <nav aria-label="Menú principal">
         <ul class="menu">
           <li><a href="#inicio">Inicio</a></li>
           <li><a href="#productos">Productos</a></li>
           <li><a href="#resenas">Reseñas</a></li>
-          <li><a href="#ubicacion">Ubicación</a></li>
           <li><a href="#contacto">Contacto</a></li>
         </ul>
       </nav>
+      <button type="button" class="boton-carrito" data-bs-toggle="offcanvas" data-bs-target="#carrito" aria-controls="carrito">
+        🛒 Carrito <span id="contador" class="contador">0</span>
+      </button>
     </div>
   </header>
 
   <main>
     <section id="inicio" class="hero">
-      <div class="contenedor">
-        <h1>Mimá a tu gato con productos de calidad</h1>
-        <p>Envíos a todo el país y asesoramiento personalizado para cada etapa de vida de tu michi.</p>
-        <a class="boton" href="#productos">Ver productos</a>
-      </div>
+      <h1>Todo para tu gato, en un solo lugar</h1>
+      <p>Alimento, juguetes, rascadores y accesorios elegidos con cariño.</p>
+      <a href="#productos" class="btn btn-light btn-lg">Ver productos</a>
     </section>
 
     <section id="productos" class="seccion">
-      <div class="contenedor">
-        <h2>Productos</h2>
-        <div class="productos">
-        <article class="card">
-          <img src="assets/img/producto-1.svg" alt="Alimento premium 7,5 kg" width="400" height="300">
-          <div class="card-body">
-            <h3>Alimento premium 7,5 kg</h3>
-            <p>Balanceado con proteína de pollo para gatos adultos.</p>
-            <span class="precio">$38.900</span>
-          </div>
-        </article>
-        <article class="card">
-          <img src="assets/img/producto-2.svg" alt="Rascador torre 1,2 m" width="400" height="300">
-          <div class="card-body">
-            <h3>Rascador torre 1,2 m</h3>
-            <p>Tres niveles, cucha y pelotita colgante.</p>
-            <span class="precio">$64.500</span>
-          </div>
-        </article>
-        <article class="card">
-          <img src="assets/img/producto-3.svg" alt="Fuente de agua 2 L" width="400" height="300">
-          <div class="card-body">
-            <h3>Fuente de agua 2 L</h3>
-            <p>Filtro de carbón y bomba silenciosa.</p>
-            <span class="precio">$29.990</span>
-          </div>
-        </article>
-        <article class="card">
-          <img src="assets/img/producto-4.svg" alt="Varita con plumas" width="400" height="300">
-          <div class="card-body">
-            <h3>Varita con plumas</h3>
-            <p>Juguete interactivo para estimular el instinto cazador.</p>
-            <span class="precio">$6.800</span>
-          </div>
-        </article>
-        <article class="card">
-          <img src="assets/img/producto-5.svg" alt="Cama iglú" width="400" height="300">
-          <div class="card-body">
-            <h3>Cama iglú</h3>
-            <p>Suave, lavable y con almohadón extraíble.</p>
-            <span class="precio">$24.300</span>
-          </div>
-        </article>
-        <article class="card">
-          <img src="assets/img/producto-6.svg" alt="Arena aglomerante 10 kg" width="400" height="300">
-          <div class="card-body">
-            <h3>Arena aglomerante 10 kg</h3>
-            <p>Control de olor y baja emisión de polvo.</p>
-            <span class="precio">$12.700</span>
-          </div>
-        </article>
-        </div>
+      <h2>Productos</h2>
+      <div id="filtros" class="filtros"></div>
+      <div id="lista-productos" class="productos">
+        <p>Cargando productos...</p>
       </div>
     </section>
 
-    <section id="resenas" class="seccion seccion-alt">
-      <div class="contenedor">
-        <h2>Reseñas</h2>
-        <div class="resenas">
-        <blockquote class="resena">
+    <section id="resenas" class="seccion">
+      <h2>Reseñas</h2>
+      <div class="resenas">
+        <article class="resena">
           <p class="estrellas" aria-label="5 de 5 estrellas">★★★★★</p>
-          <p>“Compré el rascador y mi gato no se baja más. Llegó rápido y bien embalado.”</p>
-          <cite>— Lucía (Moreno)</cite>
-        </blockquote>
-        <blockquote class="resena">
+          <p>"Compré el rascador y mi gato no se baja más. Llegó rápido."</p>
+          <p class="autor">— Lucía (Moreno)</p>
+        </article>
+        <article class="resena">
           <p class="estrellas" aria-label="4 de 5 estrellas">★★★★☆</p>
-          <p>“La fuente es muy silenciosa. Le pondría un filtro de repuesto de regalo.”</p>
-          <cite>— Martín (Merlo)</cite>
-        </blockquote>
-        <blockquote class="resena">
+          <p>"La fuente es muy silenciosa, la recomiendo."</p>
+          <p class="autor">— Martín (Merlo)</p>
+        </article>
+        <article class="resena">
           <p class="estrellas" aria-label="5 de 5 estrellas">★★★★★</p>
-          <p>“Excelente atención por WhatsApp, me recomendaron el alimento ideal para mi gata senior.”</p>
-          <cite>— Carla (Ituzaingó)</cite>
-        </blockquote>
-        <blockquote class="resena">
+          <p>"Me recomendaron el alimento ideal para mi gata senior."</p>
+          <p class="autor">— Carla (Ituzaingó)</p>
+        </article>
+        <article class="resena">
           <p class="estrellas" aria-label="5 de 5 estrellas">★★★★★</p>
-          <p>“La cama iglú es un éxito, se mete apenas la ve.”</p>
-          <cite>— Diego (Castelar)</cite>
-        </blockquote>
-        </div>
+          <p>"La cama iglú es un éxito."</p>
+          <p class="autor">— Diego (Castelar)</p>
+        </article>
       </div>
     </section>
 
-    <section id="ubicacion" class="seccion">
-      <div class="contenedor">
-        <h2>Conocé nuestro local</h2>
-        <div class="mapa">
-          <iframe title="Mapa: Moreno, Buenos Aires" src="https://www.google.com/maps?q=Moreno,+Buenos+Aires&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-      </div>
+    <section id="ubicacion" class="seccion seccion-alt">
+      <h2>Conocé nuestro local</h2>
+      <iframe class="mapa" title="Mapa: Moreno, Buenos Aires" src="https://www.google.com/maps?q=Moreno,+Buenos+Aires&amp;output=embed" loading="lazy"></iframe>
     </section>
 
-    <section id="contacto" class="seccion seccion-alt">
-      <div class="contenedor contacto">
+    <section id="contacto" class="seccion">
+      <div class="contacto">
         <div class="contacto-texto">
           <h2>Contacto</h2>
-          <p>¿Tenés alguna consulta? Escribinos y te respondemos dentro de las 24 horas hábiles.</p>
+          <p>¿Tenés alguna consulta? Escribinos y te respondemos en 24 horas.</p>
         </div>
-        <!-- Formspree: formulario "cat01" -->
-        <form class="formulario" action="https://formspree.io/f/xjygbqda" method="POST">
+        <form id="formulario" class="formulario" action="https://formspree.io/f/xjygbqda" method="POST" novalidate>
           <label for="nombre">Nombre</label>
-          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required minlength="2">
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" autocomplete="name">
+          <p class="error" id="error-nombre"></p>
+
           <label for="email">Correo electrónico</label>
-          <input type="email" id="email" name="email" placeholder="tu@correo.com" required>
+          <input type="email" id="email" name="email" placeholder="tu@correo.com" autocomplete="email">
+          <p class="error" id="error-email"></p>
+
           <label for="mensaje">Mensaje</label>
-          <textarea id="mensaje" name="mensaje" rows="5" placeholder="Contanos en qué te podemos ayudar" required></textarea>
-          <button type="submit" class="boton">Enviar mensaje</button>
+          <textarea id="mensaje" name="mensaje" rows="4" placeholder="Tu consulta"></textarea>
+          <p class="error" id="error-mensaje"></p>
+
+          <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+          <p id="estado-formulario"></p>
         </form>
       </div>
     </section>
   </main>
 
   <footer class="pie">
-    <div class="contenedor">
-      <p>&copy; 2026 Michi Market · Moreno, Buenos Aires</p>
-      <p class="aviso">Proyecto educativo — Pre-entrega Front-End JS (Talento Tech). Productos, precios y reseñas son de ejemplo.</p>
-    </div>
+    <p>&copy; 2026 Michi Market · Moreno, Buenos Aires</p>
+    <p class="aviso">Proyecto Final Front-End JS (Talento Tech). Productos y precios de ejemplo; la compra es simulada.</p>
   </footer>
+
+  <!-- Carrito: panel lateral (offcanvas de Bootstrap) -->
+  <aside class="offcanvas offcanvas-end" tabindex="-1" id="carrito" aria-labelledby="titulo-carrito">
+    <div class="offcanvas-header">
+      <h2 class="offcanvas-title" id="titulo-carrito">Tu carrito</h2>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar carrito"></button>
+    </div>
+    <div class="offcanvas-body">
+      <p id="carrito-vacio">Tu carrito está vacío.</p>
+      <ul id="lista-carrito" class="lista-carrito"></ul>
+      <p class="total">Total: <strong id="total">$ 0</strong></p>
+      <div class="acciones">
+        <button type="button" id="vaciar" class="btn btn-outline-secondary">Vaciar</button>
+        <button type="button" id="finalizar" class="btn btn-success">Finalizar compra</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Confirmación de compra (modal de Bootstrap) -->
+  <div class="modal fade" id="modal-compra" tabindex="-1" aria-labelledby="titulo-compra" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="titulo-compra">Confirmar compra</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="resumen-compra"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Seguir comprando</button>
+          <button type="button" class="btn btn-success" id="confirmar-compra">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p id="aviso" class="aviso-flotante" role="status" aria-live="polite"></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>

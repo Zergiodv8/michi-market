@@ -4,46 +4,41 @@
 
 ## Propósito
 
-Tienda online de productos para gatos: alimento, juguetes, rascadores y accesorios. Es la **Pre-entrega de Proyecto** del curso **Front-End JS** (Talento Tech · 2C 2026).
-Los productos, precios y reseñas son de ejemplo.
+Tienda online (e-commerce) de productos para gatos. Los productos se obtienen de una **API REST** con `fetch`,
+se muestran en cards y se pueden agregar a un **carrito** que se guarda en `localStorage`.
+Es el **Proyecto Final** del curso **Front-End JS** (Talento Tech · 2C 2026), construido sobre la Pre-entrega.
+Productos, precios y reseñas son de ejemplo; la compra es simulada.
+
+Usa componentes de Bootstrap con JavaScript (panel lateral para el carrito y modal para confirmar la compra), delegación de eventos, `Intl.NumberFormat`, validación al salir de cada campo y avisos flotantes.
 
 ## Sitio publicado
 
 - Sitio: https://zergiodv8.github.io/michi-market/
 - Repositorio: https://github.com/Zergiodv8/michi-market
+- API de productos: `GET https://zergiodv8.github.io/michi-market/api/productos.json` (mismo formato que fakestoreapi.com/products)
+- Pre-entrega: etiqueta [`preentrega`](https://github.com/Zergiodv8/michi-market/tree/preentrega)
+
+## Cómo verlo en la PC
+
+`fetch` no funciona si se abre `index.html` con doble clic. Usar **Live Server** de VS Code
+(clic derecho sobre `index.html` → *Open with Live Server*).
 
 ## Estructura
 
 ```
-michi-market/
-├── index.html          estructura semántica: header, nav, main, section, footer
-├── css/
-│   └── styles.css      estilos externos (Google Fonts, Flexbox, Grid, Media Queries)
-├── assets/img/         imágenes SVG de productos y logo
-└── README.md
+index.html          la página
+css/styles.css      estilos
+js/script.js        interactividad
+api/productos.json  API de productos (mismo formato que fakestoreapi.com)
+assets/img/         imágenes
+docs/               mapa de arquitectura (arquitectura.html y .json)
 ```
 
-## Requisitos de la Pre-entrega
+## Requisitos del Proyecto Final
 
-| Requisito | Dónde se cumple |
-|---|---|
-| HTML semántico (`header`, `nav`, `main`, `section`, `footer`) | `index.html` |
-| README.md | este archivo |
-| Formulario (nombre, email, mensaje) con **Formspree** | sección `#contacto` |
-| CSS externo con estilos en header, footer y navegación | `css/styles.css` |
-| Google Fonts | Fredoka (títulos) y Nunito (texto) |
-| `background` aplicado | degradado en el hero, colores en secciones y footer |
-| Productos en cards con **Flexbox** | `.productos` / `.card` |
-| Reseñas con **Grid** | `.resenas` |
-| Contacto responsivo con **Media Queries** | `@media (max-width: 768px)` |
-| Multimedia | imágenes SVG + mapa de Google Maps en `iframe` |
-| Lista de navegación (`ul`) con enlaces internos | `nav .menu` |
-| Hosting gratuito | GitHub Pages |
-
-## Tecnologías
-
-HTML5 · CSS3 · Google Fonts · Formspree · GitHub Pages
-
+| # | Requisito | Dónde se cumple |
+|---|---|---|
+|
 ## Autor
 
-Sergio Daniel Espinoza — [GitHub @Zergiodv8](https://github.com/Zergiodv8)
+Sergio Daniel Espinoza

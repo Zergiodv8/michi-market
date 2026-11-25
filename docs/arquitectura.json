@@ -1,0 +1,448 @@
+{
+  "app": "Michi Market · Nivel 3 — avanzado",
+  "version": "Nivel 3",
+  "generado": "2026-11-21",
+  "proposito": "Versión avanzada: carrito en panel lateral y confirmación en modal de Bootstrap, delegación de eventos, Intl.NumberFormat, validación al salir de cada campo y avisos.",
+  "tecnologias": [
+    "HTML5",
+    "CSS3 (Flexbox, Grid, Media Queries)",
+    "JavaScript",
+    "fetch + async/await",
+    "localStorage",
+    "Bootstrap 5.3 (CDN, con JS)",
+    "Formspree",
+    "GitHub Pages"
+  ],
+  "capas": [
+    {
+      "id": "estructura",
+      "nombre": "Estructura"
+    },
+    {
+      "id": "presentacion",
+      "nombre": "Presentación"
+    },
+    {
+      "id": "logica",
+      "nombre": "Lógica (script.js)"
+    },
+    {
+      "id": "datos",
+      "nombre": "Datos"
+    },
+    {
+      "id": "publicacion",
+      "nombre": "Publicación"
+    }
+  ],
+  "modulos": [
+    {
+      "id": "s0",
+      "corto": "§ Configuración y estado",
+      "archivo": "js/script.js § Configuración y estado",
+      "capa": "logica",
+      "descripcion": "Configuración y estado",
+      "lineas": 22,
+      "funciones": [],
+      "clases": [],
+      "usa": [
+        "s3"
+      ],
+      "librerias": [
+        "Intl.NumberFormat"
+      ]
+    },
+    {
+      "id": "s1",
+      "corto": "§ 1. Traer los productos de la A",
+      "archivo": "js/script.js § 1. Traer los productos de la API (fetch con async/await)",
+      "capa": "logica",
+      "descripcion": "1. Traer los productos de la API (fetch con async/await)",
+      "lineas": 17,
+      "funciones": [
+        "cargarProductos"
+      ],
+      "clases": [],
+      "usa": [
+        "api",
+        "s0",
+        "s2"
+      ],
+      "librerias": [
+        "fetch",
+        "async/await"
+      ]
+    },
+    {
+      "id": "s2",
+      "corto": "§ 2. Cards de productos y filtro",
+      "archivo": "js/script.js § 2. Cards de productos y filtros por categoría",
+      "capa": "logica",
+      "descripcion": "2. Cards de productos y filtros por categoría",
+      "lineas": 45,
+      "funciones": [
+        "mostrarProductos",
+        "crearFiltros"
+      ],
+      "clases": [],
+      "usa": [
+        "assets",
+        "s0",
+        "s3"
+      ],
+      "librerias": []
+    },
+    {
+      "id": "s3",
+      "corto": "§ 3. Carrito: agregar productos ",
+      "archivo": "js/script.js § 3. Carrito: agregar productos y guardar en localStorage",
+      "capa": "logica",
+      "descripcion": "3. Carrito: agregar productos y guardar en localStorage",
+      "lineas": 32,
+      "funciones": [
+        "leerCarrito",
+        "guardarCarrito",
+        "agregarAlCarrito",
+        "contarProductos",
+        "calcularTotal"
+      ],
+      "clases": [],
+      "usa": [
+        "assets",
+        "s0",
+        "s4",
+        "s7"
+      ],
+      "librerias": [
+        "localStorage",
+        "JSON"
+      ]
+    },
+    {
+      "id": "s4",
+      "corto": "§ 4. Ver y editar el carrito",
+      "archivo": "js/script.js § 4. Ver y editar el carrito (panel lateral)",
+      "capa": "logica",
+      "descripcion": "4. Ver y editar el carrito (panel lateral)",
+      "lineas": 48,
+      "funciones": [
+        "mostrarCarrito"
+      ],
+      "clases": [],
+      "usa": [
+        "s0",
+        "s3"
+      ],
+      "librerias": []
+    },
+    {
+      "id": "s5",
+      "corto": "§ 5. Simular la compra",
+      "archivo": "js/script.js § 5. Simular la compra (modal de Bootstrap)",
+      "capa": "logica",
+      "descripcion": "5. Simular la compra (modal de Bootstrap)",
+      "lineas": 22,
+      "funciones": [],
+      "clases": [],
+      "usa": [
+        "bootstrapjs",
+        "s0",
+        "s3",
+        "s7"
+      ],
+      "librerias": [
+        "Bootstrap JS"
+      ]
+    },
+    {
+      "id": "s6",
+      "corto": "§ 6. Formulario de contacto: val",
+      "archivo": "js/script.js § 6. Formulario de contacto: validación y envío a Formspree",
+      "capa": "logica",
+      "descripcion": "6. Formulario de contacto: validación y envío a Formspree",
+      "lineas": 48,
+      "funciones": [
+        "validarCampo"
+      ],
+      "clases": [],
+      "usa": [
+        "s0"
+      ],
+      "librerias": [
+        "fetch",
+        "async/await",
+        "FormData",
+        "RegExp"
+      ]
+    },
+    {
+      "id": "s7",
+      "corto": "§ Avisos al usuario",
+      "archivo": "js/script.js § Avisos al usuario",
+      "capa": "logica",
+      "descripcion": "Avisos al usuario",
+      "lineas": 14,
+      "funciones": [
+        "mostrarAviso"
+      ],
+      "clases": [],
+      "usa": [],
+      "librerias": []
+    },
+    {
+      "id": "s8",
+      "corto": "§ Inicio",
+      "archivo": "js/script.js § Inicio",
+      "capa": "logica",
+      "descripcion": "Inicio",
+      "lineas": 6,
+      "funciones": [],
+      "clases": [],
+      "usa": [
+        "s1",
+        "s4"
+      ],
+      "librerias": []
+    },
+    {
+      "id": "index",
+      "archivo": "index.html",
+      "capa": "estructura",
+      "descripcion": "Página única con header, nav, secciones (productos, carrito, reseñas, ubicación, contacto) y footer.",
+      "lineas": 163,
+      "funciones": [],
+      "clases": [],
+      "usa": [
+        "styles",
+        "bootstrapcss",
+        "bootstrapjs",
+        "s0"
+      ],
+      "librerias": [
+        "HTML5",
+        "Google Fonts",
+        "Google Maps (iframe)"
+      ]
+    },
+    {
+      "id": "styles",
+      "archivo": "css/styles.css",
+      "capa": "presentacion",
+      "descripcion": "Estilos propios: Flexbox en productos, Grid en reseñas, 3 Media Querys.",
+      "lineas": 336,
+      "funciones": [],
+      "clases": [],
+      "usa": [],
+      "librerias": [
+        "Flexbox",
+        "Grid",
+        "Media Queries",
+        "Variables CSS"
+      ]
+    },
+    {
+      "id": "bootstrapcss",
+      "archivo": "Bootstrap CSS (CDN)",
+      "capa": "presentacion",
+      "descripcion": "Clases de Bootstrap para botones y componentes.",
+      "lineas": null,
+      "funciones": [],
+      "clases": [],
+      "usa": [],
+      "librerias": []
+    },
+    {
+      "id": "bootstrapjs",
+      "archivo": "Bootstrap JS (CDN)",
+      "capa": "logica",
+      "descripcion": "Comportamiento del panel lateral (offcanvas) y del modal.",
+      "lineas": null,
+      "funciones": [],
+      "clases": [],
+      "usa": [],
+      "librerias": []
+    },
+    {
+      "id": "assets",
+      "archivo": "assets/img/*.svg",
+      "capa": "presentacion",
+      "descripcion": "Logo e imágenes de productos.",
+      "lineas": null,
+      "funciones": [],
+      "clases": [],
+      "usa": [],
+      "librerias": []
+    },
+    {
+      "id": "api",
+      "archivo": "api/productos.json",
+      "capa": "datos",
+      "descripcion": "API de productos (GET): 12 productos con id, title, price, category, description e image.",
+      "lineas": 14,
+      "funciones": [],
+      "clases": [],
+      "usa": [],
+      "librerias": []
+    },
+    {
+      "id": "readme",
+      "archivo": "README.md",
+      "capa": "publicacion",
+      "descripcion": "Propósito, cómo verlo y tabla de requisitos de la consigna.",
+      "lineas": 35,
+      "funciones": [],
+      "clases": [],
+      "usa": [],
+      "librerias": []
+    }
+  ],
+  "fases": [
+    {
+      "n": 1,
+      "nombre": "Carga la página",
+      "modulos": [
+        "index",
+        "styles",
+        "s0"
+      ],
+      "hace": "Se lee el carrito guardado en localStorage y se muestra el contador."
+    },
+    {
+      "n": 2,
+      "nombre": "Pide los productos",
+      "modulos": [
+        "s1",
+        "api",
+        "s2",
+        "assets"
+      ],
+      "hace": "fetch a api/productos.json y se dibuja una card por producto con filtros por categoría."
+    },
+    {
+      "n": 3,
+      "nombre": "Agrega al carrito",
+      "modulos": [
+        "s3",
+        "s4"
+      ],
+      "hace": "Suma el producto (o una unidad más), guarda en localStorage y actualiza el contador."
+    },
+    {
+      "n": 4,
+      "nombre": "Edita el carrito",
+      "modulos": [
+        "s3",
+        "s4",
+        "index"
+      ],
+      "hace": "Botón del header abre el panel lateral: −, +, Eliminar y Vaciar; total y contador se recalculan."
+    },
+    {
+      "n": 5,
+      "nombre": "Finaliza la compra",
+      "modulos": [
+        "s5",
+        "bootstrapjs"
+      ],
+      "hace": "Compra simulada: modal con el resumen y confirmación; se vacía el carrito."
+    },
+    {
+      "n": 6,
+      "nombre": "Envía una consulta",
+      "modulos": [
+        "s6"
+      ],
+      "hace": "Se valida al salir de cada campo; al enviar, fetch a Formspree y mensaje de resultado."
+    }
+  ],
+  "externos": [
+    {
+      "id": "pages",
+      "nombre": "GitHub Pages",
+      "acceso": "hosting estático",
+      "usa": [
+        "index"
+      ]
+    },
+    {
+      "id": "formspree",
+      "nombre": "Formspree",
+      "acceso": "POST con fetch a formspree.io/f/xjygbqda",
+      "usa": [
+        "s6"
+      ]
+    },
+    {
+      "id": "cdn",
+      "nombre": "Bootstrap (jsDelivr CDN)",
+      "acceso": "<link> y <script> en index.html",
+      "usa": [
+        "index"
+      ]
+    },
+    {
+      "id": "fonts",
+      "nombre": "Google Fonts",
+      "acceso": "<link> (Fredoka y Nunito)",
+      "usa": [
+        "index"
+      ]
+    },
+    {
+      "id": "maps",
+      "nombre": "Google Maps",
+      "acceso": "iframe",
+      "usa": [
+        "index"
+      ]
+    }
+  ],
+  "almacenamiento": [
+    {
+      "ruta": "localStorage › michiMarket.carrito",
+      "contenido": "array [{ id, title, price, cantidad }]; si está dañado se empieza vacío"
+    }
+  ],
+  "titulo_salida": "Archivos que se publican",
+  "salida": [
+    {
+      "ruta": "index.html · css/ · js/",
+      "que": "la página"
+    },
+    {
+      "ruta": "api/productos.json",
+      "que": "datos de productos"
+    },
+    {
+      "ruta": "assets/img/",
+      "que": "imágenes"
+    },
+    {
+      "ruta": "README.md",
+      "que": "propósito y requisitos"
+    },
+    {
+      "ruta": "docs/",
+      "que": "este mapa"
+    }
+  ],
+  "seguridad": [
+    "El carrito vive sólo en el navegador del visitante.",
+    "El formulario lo recibe Formspree; el sitio no guarda datos.",
+    "La compra es simulada: no hay medios de pago."
+  ],
+  "resumen": {
+    "modulos": 4,
+    "lineas": 767,
+    "funciones": 11,
+    "clases": null
+  },
+  "tema": {
+    "fondo": "#fff7ef",
+    "banda": "#e6dcf5",
+    "estructura": "#6c3fb5",
+    "ruta": "#e0611a"
+  },
+  "inicio": "s3",
+  "titulo_flujo": "Qué pasa cuando alguien usa la tienda"
+}
